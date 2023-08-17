@@ -1,0 +1,128 @@
+{% load static %}
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalVerSeguimientoFormLabel">Ver Solicitud {{ object }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body ">
+        <form class="px-2">
+            <div class="row">
+                <div class="form-group text-center">
+                    <h3>{{ object.categoria}} - {{ object.sub_categoria }}</h3>
+                </div>
+            </div>
+            <br>
+            <div class="row ">  
+                <div class="col ">
+
+                    <div class="row">
+                        <div class="col">
+                        <div class="form-group">
+                            <strong><label for="id_comentario">Comentario:</label></strong>
+                            <p class="text-muted">{{ object.comentario }}</p>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                          <div class="form-group">
+                            <strong><label for="id_ubicacion">Ubicación:</label></strong>
+                            <p class="text-muted">{{ object.ubicacion }}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+                <div class="col ">
+                    {% if object.adjuntos %}
+                        <img src="{% get_media_prefix %}{{ object.adjuntos }}" class="img-fluid rounded-start" alt="...">
+                    {% else %}
+                        <img src="{% static 'IMG/Chihuahua1.jpg' %}" class="img-fluid rounded-start" alt="...">
+                    {% endif %}  
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-2">
+                    <div class="form-group">
+                        <strong><label for="id_ubicacion">Prioridad:</label></strong>
+                        <p class="text-muted">{{ object.get_ultima_prioridad }}</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <strong><label for="id_ubicacion">Estatus:</label></strong>
+                        <p class="text-muted">{{ object.get_ultimo_estatus }}</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <strong><label for="id_ubicacion">Fecha de creación:</label></strong>
+                        <p class="text-muted">{{ object.fecha_creacion }}</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <strong><label for="id_ubicacion">Creador:</label></strong>
+                        <p class="text-muted">{{ object.usuario }} <button type="button" class="btn btn-info btn-block"><i class="bi bi-info-lg"></i></button></p>
+                    </div>
+                </div>
+            </div>
+        </form>
+      </div>
+      <div class="text-bg-secondary">
+            <h5 class="card-title text-center my-3">Historial:</h5>  
+            <div class=" card m-3 p-2 text-bg-light"> 
+                <table class="table" id="tabla">
+                    <tr>
+                        <th>#</th>
+                        <th>Comentario</th>
+                        <th>Prioridad</th>
+                        <th>Estatus</th>
+                        <th>Adjuntos</th>
+                        <th>Creación</th>
+                    </tr>
+                    {% for respuesta in historial %}
+                    <tr id="{{respuesta.id}}_fila">
+                        <td id="{{respuesta.id}}_id_counter">{{ forloop.counter }}</td>
+                        <td id="{{respuesta.id}}_comentario">{{ respuesta.comentario }}</td>
+                        <td id="{{respuesta.id}}_prioridad">{{ respuesta.prioridad }}</td>
+                        <td id="{{respuesta.id}}_estatus">{{ respuesta.estatus }}</td>
+                        <td id="{{respuesta.id}}_adjuntos">{{ respuesta.adjuntos}}</td>
+                        <td id="{{respuesta.id}}_fecha_creacion">{{ respuesta.fecha_creacion }}</td>
+                    {% endfor %}
+                    </tr>
+                </table>
+            </div>
+        </div>
+      
+        <div class="modal-footer">
+            <button onclick="abrirModalSeguimiento('{% url 'responder_solicitud' object.id %}')" type="button" class="btn btn-warning btn-block" ><i class="bi bi-pencil-fill"></i>  Dar Seguimiento</button>
+        </div>
+
+        
+    </div>
+  </div>
+
+   <!-- Modal responder -->
+   <div class="modal fade" id="ModalResponderForm" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalResponderLabel" aria-hidden="true">  
+
+   </div>
+
+
+  <script>
+  function abrirModalSeguimiento(url) {
+      console.log(url); 
+      $('#ModalVerSeguimientoForm').modal('hide');
+      $('#ModalResponderForm').load(url, function(){
+        $(this).modal('show');
+        
+      });
+      
+    } 
+
+  </script>
+
+
+  

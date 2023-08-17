@@ -1,0 +1,347 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Seguimiento {% endblock title%}
+
+{% block style %} 
+<style>
+    .narrow-select select {
+      width: 200px;
+      max-width: 100%;
+  }
+  
+    .select-box{
+      width: 18%;
+    }
+  
+  </style>
+{% endblock style %}
+
+{% block content %}
+
+<div class="container">
+    <div class="card text-bg-light p-4">
+        <div class="row">
+            <div class="col">
+                <div class="col-md">
+                    <div class="card text-center text-white mb-3 border-light" id="ordenes_pendientes">
+                        <div class="card-header">
+                            <h5 class="card-title">Ordenes Pendientes</h5>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{ordenes_pendientes}}</h3>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="col-md">
+                    <div class="card text-center text-white mb-3 border-light" id="ordenes_en_proceso">
+                        <div class="card-header">
+                            <h5 class="card-title">Ordenes En Proceso</h5>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{ordenes_en_proceso}}</h3>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="col-md">
+                    <div class="card text-center text-white mb-3 border-light" id="ordenes_completadas">
+                        <div class="card-header">
+                            <h5 class="card-title">Ordenes Completadas</h5>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{ordenes_completadas}}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" >
+            <div class="col" >
+                <canvas id="myChart" ></canvas>
+            </div>
+            <div class="col">
+                <canvas id="myChart2" ></canvas>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+
+
+
+<div class="container ">
+
+    <div class= "col-12 mt-3">
+        <div class="card card-body border-light">
+            <div>
+                <h3>Solicitudes</h3>
+            </div>
+        </div>  
+        <br>
+
+        <div class="card card-body border-light">
+
+<!-- Formulario de filtrado-->
+
+<div class="row justify-content-end ">
+    <div class="col-md-12 justify-content-end ">
+
+      <form method="GET" class="d-flex align-items-end">
+        <div class="form-group col me-3 select-box narrow-select">
+          <div class="row">
+            <label for="{{ filter.form.categoria.id_for_label }}" class="form-label">Categoría:</label>
+          </div>
+          {{ filter.form.categoria }}
+        </div>
+        
+        <div class="form-group col me-3 select-box narrow-select">
+          <div class="row">
+            <label for="{{ filter.form.sub_categoria.id_for_label }}" class="form-label">Subcategoría:</label>
+          </div>
+            {{ filter.form.sub_categoria }}
+        </div>
+        
+        <div class="form-group col me-3  select-box narrow-select">
+          <div class="row">
+            <label for="{{ filter.form.ultima_estatus.id_for_label }}" class="form-label">Estatus:</label>
+          </div>
+          {{ filter.form.ultima_estatus }}
+        </div>
+        
+        <div class="form-group col me-3 select-box narrow-select">
+          <div class="row">
+            <label for="{{ filter.form.ultima_prioridad.id_for_label }}" class="form-label">Prioridad:</label>
+          </div>
+          {{ filter.form.ultima_prioridad}}
+        </div>
+        
+        <div class="form-group col me-3  select-box ">
+              <button type="submit" class="btn btn-primary me-1 btn-block flex-fill">Aplicar</button>
+              <a href="{% url 'solicitud' %}" class="btn btn-secondary btn-block flex-fill">Borrar</a>
+        </div>
+
+      
+      </form>
+      
+      
+    </div>
+  </div>
+
+
+            <hr>
+            <table class="table" id="tabla">
+                <tr>
+                    <th>#</th>
+                    <th>Categoria</th>
+                    <th>Sub Categoria</th>
+                    <th>Prioridad</th>
+                    <th>Estatus</th>
+                    <th>Creación</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                {%  for solicitudes in solicitudes %}
+                    <tr id="{{solicitud.id}}_fila">
+                        <td id="{{solicitud.id}}_id">{{ solicitudes.id }}</td>
+                        <td id="{{solicitud.id}}_nombre">{{ solicitudes.categoria }}</td>
+                        <td id="{{solicitud.id}}_descripcion">{{ solicitudes.sub_categoria }}</td>
+                        <td id="{{solicitud.id}}_prioridad">{{ solicitudes.get_ultima_prioridad }}</td>
+                        <td id="{{solicitud.id}}_estatus">{{ solicitudes.get_ultimo_estatus }}</td>
+                        <td id="{{solicitud.id}}_fecha_creacion">{{ solicitudes.fecha_creacion }}</td>
+                        <td class="text-center">
+                            <button onclick="abrirModalSeguimiento('{% url 'seguimiento_solicitud' solicitudes.id %}')" type="button" class="btn btn-info btn-block" ><i class="bi bi-eye-fill text-white"></i></button>
+                            <button onclick="abrirModalResponder('{% url 'responder_solicitud' solicitudes.id %}')" type="button" class="btn btn-warning btn-block" text="Dar seguimiento" ><i class="bi bi-reply-fill"></i></button>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
+             <!-- nav del pagination-->
+            <nav aria-label="...">
+                <ul class="pagination justify-content-center">
+                {% if solicitudes.has_previous %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page=1">Primera</a>
+                    </li>
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ solicitudes.previous_page_number }}">Anterior</a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                    <span class="page-link disabled">Primera</span>
+                    </li>
+                    <li class="page-item">
+                    <span class="page-link disabled">Anterior</span>
+                    </li>
+                {% endif %}
+                
+                {% if solicitudes.number > 1 %}
+                    <li class="page-item"><span class="page-link">...</span></li>
+                {% endif %}
+                
+                {% for i in solicitudes.paginator.page_range %}
+                    {% if i == solicitudes.number %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ i }}</span>
+                    </li>
+                    {% elif i > solicitudes.number|add:"-2" and i < solicitudes.number|add:"2" %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if solicitudes.number < solicitudes.paginator.num_pages|stringformat:"s"|add:"-1" %}
+                    <li class="page-item"><span class="page-link">...</span></li>
+                {% endif %}
+        
+                {% if solicitudes.has_next %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ solicitudes.next_page_number }}">Siguiente</a>
+                    </li>
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ solicitudes.paginator.num_pages }}">Última</a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                    <span class="page-link disabled">Siguiente</span>
+                    </li>
+                    <li class="page-item">
+                    <span class="page-link disabled">Última</span>
+                    </li>
+                {% endif %}
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</div>
+
+
+ 
+<!-- Modal Responder  -->
+<div class="modal fade" id="ModalResponderForm" role="modal-dialog"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalResponderLabel" aria-hidden="true">  
+
+</div>
+
+<!-- Modal Seguimiento -->
+<div class="modal fade" id="ModalVerSeguimientoForm" role="modal-dialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ModalVerSeguimientoFormLabel" aria-hidden="true">  
+
+</div>
+ 
+
+{% endblock content %}
+
+{% block scripts %} 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="text/javascript">
+    var $ = jQuery.noConflict();
+    let solicitudId = null;
+  
+    function setSolicitudId(id) {
+      solicitudId = id;
+      document.getElementById("solicitudId").textContent = id;
+    }
+
+
+    function abrirModalResponder(url) {
+      $('#ModalResponderForm').load(url, function(){
+        $(this).modal('show');
+      });
+    } 
+
+    function abrirModalSeguimiento(url) {
+      $('#ModalVerSeguimientoForm').load(url, function(){
+        $(this).modal('show');
+      });
+    } 
+
+    var ctx = document.getElementById('myChart');
+    var fechas = {{ fechas | safe }};
+    var cantidades = {{ cantidades_fechas | safe }};
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: fechas,
+            datasets: [{
+                label: 'Solicitudes',
+                data: cantidades,
+                borderColor: "#3e95cd",
+                backgroundColor: "#3e95cd",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Solicitudes por día',
+                    font: { size : 20}
+                },
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1
+                    }
+                },
+                legend: { 
+                    display: false 
+                }
+            }
+        }
+    });
+
+    var ctx = document.getElementById('myChart2');
+    var categorias = {{ categorias | safe }};
+    var cantidades_categorias = {{ cantidades_categorias | safe }};
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: categorias,
+            datasets: [{
+                label: 'Solicitudes',
+                data: cantidades_categorias,
+                borderColor: "#3e95cd",
+                backgroundColor: "#3e95cd",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Solicitudes por categoría',
+                    font: { size : 20}
+                },
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1
+                    }
+                },
+                legend: { 
+                    display: false 
+                }
+            }
+        }
+    });
+
+
+  </script>
+
+{% endblock scripts %}

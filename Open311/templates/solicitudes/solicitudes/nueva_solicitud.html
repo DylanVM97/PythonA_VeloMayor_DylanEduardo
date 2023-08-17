@@ -1,0 +1,85 @@
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Nueva Soliciutd: <span id="solicitudId"></span></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'nueva_solicitud' %}"  method="POST" id="NewForm" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{Newform}} 
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-block" title="Cancelar" data-bs-dismiss="modal"><i class="bi bi-arrow-left-square-fill"></i> Cancelar</button>
+            <button type="reset"  class="btn btn-secondary btn-block" title="Reset"><i class="bi bi-arrow-clockwise"></i></button>
+            <input type="submit" value="Guardar" class="btn btn-primary" data-bs-dismiss="modal">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+
+    $(document).ready(function(){
+      $('#id_sub_categoria').attr('disabled', 'disabled')
+    });
+
+    $('#id_categoria').change(function(){
+      id_categoria = $(this).val()
+      if (id_categoria) {
+        $.ajax({
+          type: 'POST',
+          url: "{% url 'ajaxFiltrarCategorias' %}",
+          headers: {
+            'x-CSRFToken':'{{ csrf_token }}'
+          },
+          data: {
+            'id_categoria':id_categoria
+          },
+          success: function(response) {
+            $('#id_sub_categoria').removeAttr('disabled')
+            option = ""
+            $('#id_sub_categoria').html("<option value=''>---------</option>")
+            $.each(response['sub_categorias'], function(key, value){
+              option += "<option value='"+value.id+"'>"+value.nombre+"</option>"
+            });
+            $('#id_sub_categoria').append(option)
+          }
+        });
+      } else {
+        $('#id_sub_categoria').attr('disabled', 'disabled'); 
+        $('#id_sub_categoria').val(''); 
+      }
+    });
+
+
+
+    
+
+    // Cuando se envíe el formulario
+$('#NewForm').submit(function(event) {
+    event.preventDefault();
+    var form = $(this);
+    var url = form.attr('action');
+    var formData = new FormData(form[0]);  // Usamos FormData en lugar de serialize()
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: formData,
+        processData: false,  // Evita que jQuery procese los datos
+        contentType: false,  // Evita que jQuery establezca el tipo de contenido
+        success: function(response) {
+            $('#modalCrearForm').modal('hide');
+            location.reload();
+        },
+        error: function(xhr, errmsg, err) {
+            console.log(xhr.status + ': ' + xhr.responseText);
+        }
+    });
+});
+
+  </script>
+  

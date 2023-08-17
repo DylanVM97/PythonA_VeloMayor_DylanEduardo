@@ -1,0 +1,24 @@
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarFormLabel">Editar Solicitud {{object}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'editar_solicitud' object.id %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p}}
+          <input type="hidden" id = "id_formulario">
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    
+  </script>

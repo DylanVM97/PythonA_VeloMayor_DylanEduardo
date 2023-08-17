@@ -1,0 +1,60 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %} Inicio {% endblock title%}
+
+{% block style %}   {% endblock style %}
+
+{% block content %}
+
+<div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="{% static 'IMG/Chihuahua1.jpg'%}" class="d-block w-100" height="800px" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'IMG/Chihuahua2.jpg'%}" class="d-block w-100" height="800px" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'IMG/Chihuahua3.jpg'%}" class="d-block w-100" height="800px" alt="...">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+<br>
+<div class="row align-items-md-stretch">
+
+    <div class="col-md-6">
+      <div class="h-100 p-5 text-white bg-primary border rounded-3">
+        <h2>Change the background</h2>
+        <p>Swap the background-color utility and add a `.text-*` color utility to mix up the jumbotron look. Then,
+          mix and match with additional component themes and more.</p>
+        <button class="btn btn-outline-primary" type="button">Example button</button>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="h-100 p-5 bg-primary border rounded-3">
+        <h2>Add borders</h2>
+        <p>Or, keep it light and add a border for some added definition to the boundaries of your content. Be sure
+          to look under the hood at the source HTML here as we've adjusted the alignment and sizing of both
+          column's content for equal-height.</p>
+        <button class="btn Swap the background-color utility and add a `.text-*` color utility to mix up the jumbotron look. Then,
+          mix and match with additional component themes and more." type="button">Example button</button>
+      </div>
+    </div>
+
+</div>
+
+{% endblock content %}
+
+{% block scripts %} 
+{% endblock scripts %}

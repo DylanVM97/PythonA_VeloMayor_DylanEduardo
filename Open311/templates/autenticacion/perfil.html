@@ -1,0 +1,94 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% block title %} Mi Perfil {% endblock title%}
+
+{% block style %}  
+<style>
+
+body{margin-top:20px;}
+
+
+#main {
+    background-color: #f2f2f2;
+    padding: 20px;
+    margin-top: -55px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+    border-bottom: 4px solid #ddd;
+}
+
+#real-estates-detail #author img {
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    -o-border-radius: 100%;
+    border-radius: 100%;
+    border: 5px solid #ecf0f1;
+    margin-bottom: 10px;
+}
+#real-estates-detail .sosmed-author i.fa {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #bdc3c7;
+    color: #bdc3c7;
+    padding-top: 6px;
+    margin-top: 10px;
+}
+
+.panel-default .panel-heading {
+    background-color: #fff;
+}
+
+#real-estates-detail .slides li img {
+    height: 450px;
+}
+</style>
+{% endblock style %}
+
+{% block content %}
+
+<div class="container">
+
+        <div class="row" id="real-estates-detail">
+            <div class="col-lg-4 col-md-4 col-xs-12">
+                <div class="panel panel-default card text-bg-light">
+
+                    <div class="panel-heading">
+                        <header class="panel-title">
+                            <div class="text-center">
+                                <strong>Rol del usuario {{request.rol}}</strong>
+                            </div>
+                        </header>
+                    </div>
+
+                    <div class="panel-body">
+                        <div class="text-center" id="author">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                            <h3>{{request.user}}</h3>
+                            <small class="label label-warning">From USA</small>
+                            <p>Aku kie sing sok ngedolke omah-omah kae, yo iso di omongke makelar ngono sih. Tapi makelar nek payu ne akeh yo dadi sugih bro. Tenanan ra ngapusi.</p>
+                            <p class="sosmed-author">
+                                <a href="#"><i class="fa fa-facebook" title="Facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter" title="Twitter"></i></a>
+                                <a href="#"><i class="fa fa-google-plus" title="Google Plus"></i></a>
+                                <a href="#"><i class="fa fa-linkedin" title="Linkedin"></i></a>
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+    <div class="col-9">
+
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %} 
+{% endblock scripts %}

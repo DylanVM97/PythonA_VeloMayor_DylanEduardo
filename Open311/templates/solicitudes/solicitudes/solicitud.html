@@ -1,0 +1,280 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Solicitud {% endblock title%}
+
+{% block style %} 
+<style>
+  .narrow-select select {
+    width: 200px;
+    max-width: 100%;
+}
+
+  .select-box{
+    width: 18%;
+  }
+
+</style>
+{% endblock style %}
+
+{% block content %}
+ 
+
+<div class="container">
+
+  <div class="card card-body border-light">
+    <div class="row">
+      <div class="col">
+          <h4 style="float: left;">Mis Solicitudes</h4>
+      </div>
+      <div class="col">
+          <button onclick="abrirModalCrear('{% url 'nueva_solicitud'%}')" type="button" class="btn btn-primary btn-block" style="float: right;" ><i class="bi bi-plus-lg""></i> Nuevo</button>
+      </div>
+    </div>
+  </div>
+    <br>
+  <div class="card card-body border-light">
+
+    <!-- Formulario de filtrado-->
+
+    <div class="row justify-content-end ">
+      <div class="col-md-12 justify-content-end ">
+
+        <form method="GET" class="d-flex align-items-end">
+          <div class="form-group col me-3 select-box narrow-select">
+            <div class="row">
+              <label for="{{ filter.form.categoria.id_for_label }}" class="form-label">Categoría:</label>
+            </div>
+            {{ filter.form.categoria }}
+          </div>
+          
+          <div class="form-group col me-3 select-box narrow-select">
+            <div class="row">
+              <label for="{{ filter.form.sub_categoria.id_for_label }}" class="form-label">Subcategoría:</label>
+            </div>
+              {{ filter.form.sub_categoria }}
+          </div>
+          
+          <div class="form-group col me-3  select-box narrow-select">
+            <div class="row">
+              <label for="{{ filter.form.ultima_estatus.id_for_label }}" class="form-label">Estatus:</label>
+            </div>
+            {{ filter.form.ultima_estatus }}
+          </div>
+          
+          <div class="form-group col me-3 select-box narrow-select">
+            <div class="row">
+              <label for="{{ filter.form.ultima_prioridad.id_for_label }}" class="form-label">Prioridad:</label>
+            </div>
+            {{ filter.form.ultima_prioridad}}
+          </div>
+          
+          <div class="form-group col me-3  select-box ">
+                <button type="submit" class="btn btn-primary me-1 btn-block flex-fill">Aplicar</button>
+                <a href="{% url 'solicitud' %}" class="btn btn-secondary btn-block flex-fill">Borrar</a>
+          </div>
+
+        
+        </form>
+        
+        
+      </div>
+    </div>
+    
+
+    <br>
+
+    <!-- Tabla del formulario solicitudes-->
+    <hr>
+    <table class="table table-sm">
+      <tr>
+          <th>#</th>
+          <th>Categoria</th>
+          <th>Sub Categoria</th>
+          <th>Comentario</th>
+          <th>Prioridad</th>
+          <th>Estatus</th>
+          <th class="text-center">Acciones</th>
+      </tr>
+      {%  for solicitudes in solicitudes %}
+      <tr id="{{solicitudes.id}}_fila">
+          <td id="{{solicitudes.id}}_id_counter">{{ forloop.counter }}</td>
+          <td id="{{solicitudes.id}}_categoria">{{ solicitudes.categoria }}</td>
+          <td id="{{solicitudes.id}}_sub_categoria">{{ solicitudes.sub_categoria }}</td>
+          <td id="{{solicitudes.id}}_comentario">{{ solicitudes.comentario }}</td>
+          <td id="{{solicitudes.id}}_prioridad">{{ solicitudes.get_ultima_prioridad}}</td>
+          <td id="{{solicitudes.id}}_estatus">{{ solicitudes.get_ultimo_estatus }}</td>
+          <td class="text-center">
+              <button onclick="abrirModalVer('{% url 'ver_solicitud' solicitudes.id %}')" type="button" class="btn btn-info btn-block" ><i class="bi bi-eye-fill text-white"></i></button>
+
+          {% if solicitudes.get_ultimo_estatus == 'Pendiente' %}
+              <button onclick="abrirModalEditar('{% url 'editar_solicitud' solicitudes.id %}')" type="button" class="btn btn-warning btn-block" ><i class="bi bi-pencil-fill"></i></button>
+              <a href="" type="button" class="btn btn-danger btn-block" data-bs-toggle="modal" data-bs-target="#modalDeleteForm" onclick="setSolicitudId({{ solicitudes.id }})"><i class="bi bi-trash-fill"></i></a>
+          {% endif %}
+          {% if solicitudes.get_ultimo_estatus == 'Atendido' %}
+              <button onclick="abrirModalEditar('{% url 'editar_solicitud' solicitudes.id %}')" type="button" class="btn btn-success btn-block" ><i class="bi bi-check-lg"></i></button>
+              <button onclick="abrirModalEditar('{% url 'editar_solicitud' solicitudes.id %}')" type="button" class="btn btn-danger btn-block" ><i class="bi bi-x-lg"></i></button>
+          {% endif %}
+          </td>
+      </tr>
+      {% endfor %}
+    </table>
+    
+    <br>
+    <!-- nav del pagination-->
+    <nav aria-label="...">
+      <ul class="pagination justify-content-center">
+        {% if solicitudes.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1">Primera</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ solicitudes.previous_page_number }}">Anterior</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <span class="page-link disabled">Primera</span>
+          </li>
+          <li class="page-item">
+            <span class="page-link disabled">Anterior</span>
+          </li>
+        {% endif %}
+        
+        {% if solicitudes.number > 1 %}
+          <li class="page-item"><span class="page-link">...</span></li>
+        {% endif %}
+        
+        {% for i in solicitudes.paginator.page_range %}
+          {% if i == solicitudes.number %}
+            <li class="page-item active">
+              <span class="page-link">{{ i }}</span>
+            </li>
+          {% elif i > solicitudes.number|add:"-2" and i < solicitudes.number|add:"2" %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        
+        {% if solicitudes.number < solicitudes.paginator.num_pages|stringformat:"s"|add:"-1" %}
+          <li class="page-item"><span class="page-link">...</span></li>
+        {% endif %}
+
+        {% if solicitudes.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ solicitudes.next_page_number }}">Siguiente</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ solicitudes.paginator.num_pages }}">Última</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <span class="page-link disabled">Siguiente</span>
+          </li>
+          <li class="page-item">
+            <span class="page-link disabled">Última</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+  </div>     
+</div>
+
+ 
+ 
+  <!-- Modal Delete -->
+  <div class="modal fade" id="modalDeleteForm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Soliciutd: <span id="solicitudId"></span></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            ¿Estas seguro que quieres eliminar esta solicitud?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close"  onclick="borrarSolicitud({{ solicitudes.id }})">Borrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Modal New -->
+  <div class="modal fade" id="ModalCrearForm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+
+  </div>
+
+
+  <!-- Modal Edit -->
+  <div class="modal fade" id="ModalEditarForm" role="modal-dialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEditarFormLabel" aria-hidden="true">  
+
+  </div>
+
+  <!-- Modal Ver -->
+  <div class="modal fade" id="ModalVerForm" role="modal-dialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalVerFormLabel" aria-hidden="true">  
+
+  </div>
+ 
+  
+  
+
+
+{% endblock content %}
+
+{% block scripts %} 
+<script type="text/javascript">
+    var $ = jQuery.noConflict();
+    let solicitudId = null;
+  
+    function setSolicitudId(id) {
+      solicitudId = id;
+      document.getElementById("solicitudId").textContent = id;
+    }
+  
+    function borrarSolicitud(id) {
+        if (solicitudId) {
+            $.ajax({
+            method: "POST",
+            url: "{% url 'ajaxEliminarSolicitud' %}",
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data:{
+                "id":solicitudId,
+            },
+            success: function(response){
+                $("#"+response.id+"_fila").remove();
+                console.log("Borrar solicitud con ID:", solicitudId);
+                $('#staticBackdrop').modal('hide');
+              }   
+            })
+        }
+    }
+
+    function abrirModalCrear(url) {
+      $('#ModalCrearForm').load(url, function(){
+        $(this).modal('show');
+      });
+    } 
+
+
+    function abrirModalEditar(url) {
+      $('#ModalEditarForm').load(url, function(){
+        $(this).modal('show');
+      });
+    } 
+
+    function abrirModalVer(url) {
+      console.log(url)
+      $('#ModalVerForm').load(url, function(){
+        $(this).modal('show');
+      });
+    } 
+
+  </script>
+
+{% endblock scripts %}
+

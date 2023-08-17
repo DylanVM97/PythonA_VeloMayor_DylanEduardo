@@ -1,0 +1,20 @@
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modalResponderLabel">Seguimiento solicitud: {{ solicitud.id }}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'responder_solicitud'  solicitud.id %}"  method="POST" id="NewForm">
+                {% csrf_token %}
+                {{ form.as_p }} 
+
+                <div class="modal-footer">
+                    <input type="submit" value="Guardar" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
